@@ -1,19 +1,18 @@
 #include <stdio.h>
-#include <sys/types.h>
 #include <stdlib.h>
 
 struct process{
 	int pid;
+	//int at;
 	int bt;
 	int wt;
 	int tat;
 };
 
-
-void findWT(struct process p[], int numP);
-void findTAT(struct process p[], int numP);
-double findAvgWT(struct process p[], int n);
-double findAvgTAT(struct process p[], int n);
+void findWT(struct process p[], int len);
+void findTAT(struct process p[], int len);
+float findAvgWT(struct process p[], int len);
+float findAvgTAT(struct process p[], int len);
 
 int main(){
 	int n;
@@ -41,35 +40,40 @@ int main(){
 	return 0;
 }
 
-void findWT(struct process p[], int numP){
+void findWT(struct process p[], int len){
 	int wait = 0;
-	p[0].wt = 0;
-	for(int i = 1; i < numP; i++){
-		wait+=p[i-1].bt;
+	for(int i = 0; i < len; i++){
 		p[i].wt = wait;
+		wait += p[i].bt;
 	}
 }
 
-void findTAT(struct process p[], int numP){
-	for(int i = 0; i < numP; i++){
+void findTAT(struct process p[], int len){
+	for(int i = 0; i < len; i++){
 		p[i].tat = p[i].bt + p[i].wt;
 	}
 }
 
-double findAvgWT(struct process p[], int n){
-	float total=0;
-	for(int i = 0; i < n; i++){
-		total += p[i].wt;
+float findAvgWT(struct process p[], int len){
+	int totalWait = 0;
+	float avg = 0;
+	
+	for(int i = 0; i < len; i++){
+		totalWait += p[i].wt;
 	}
 	
-	return total/n;
+	avg = (totalWait*1.0)/len;
+	return avg;	
 }
 
-double findAvgTAT(struct process p[], int n){
-	float total=0;
-	for(int i = 0; i < n; i++){
-		total += p[i].tat;
+float findAvgTAT(struct process p[], int len){
+	int totalTAT = 0;
+	float avg = 0;
+	
+	for(int i = 0; i < len; i++){
+		totalTAT += p[i].tat;
 	}
 	
-	return total/n;
+	avg = (totalTAT*1.0)/len;
+	return avg;	
 }

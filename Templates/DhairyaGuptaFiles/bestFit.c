@@ -1,40 +1,73 @@
-#include<stdio.h>
-#define max 25
-void main() {
-	int frag[max], b[max], f[max], i, j, nb, nf, temp, highest=0;
-	static int bf[max], ff[max];
-	printf("\nEnter the number of blocks:");
-	scanf("%d", &nb);
-	printf("Enter the number of process:");
-	scanf("%d", &nf);
-	printf("\nEnter the size of the blocks :- \n");
-	for(i=1; i <= nb; i++) {
-		printf("Block %d:", i);
-		scanf("%d", &b[i]);
-	}
-	printf("Enter the size of the process:- \n");
-	for(i=1; i <= nf; i++) {
-		printf("File %d:", i);
-		scanf("%d", &f[i]);
-	}
-	for(i=1; i <= nf; i++) {
-		for(j=1; j <= nb; j++) {
-			if(bf[j] != 1) {
-				temp = b[j] - f[i];
-				if(temp >= 0) {
-					if(highest < temp) {
-					ff[i] = j;
-					highest = temp;
-					}
-				}
-			}
-		}
-		frag[i] = highest;
-		bf[ff[i]] = 1;
-		highest = 0;
-	}
-	printf("\nprocess_no:\tprocess_size :\tBlock_no: \tBlock_size: \tFragment\n");
-	for(i=1; i <= nf; i++) {
-		printf("\n%d\t\t%d\t\t%d\t\t%d\t\t%d\n", i, f[i], ff[i], b[ff[i]], frag[i]);
-	}
+#include <stdio.h>
+
+void implimentBestFit(int blockSize[], int blocks, int processSize[], int proccesses)
+{
+    // This will store the block id of the allocated block to a process
+    int allocation[proccesses];
+    int occupied[blocks];
+    
+    // initially assigning -1 to all allocation indexes
+    // means nothing is allocated currently
+    for(int i = 0; i < proccesses; i++){
+        allocation[i] = -1;
+    }
+    
+    for(int i = 0; i < blocks; i++){
+        occupied[i] = 0;
+    }
+ 
+    // pick each process and find suitable blocks
+    // according to its size ad assign to it
+    for (int i = 0; i < proccesses; i++)
+    {
+        
+        int indexPlaced = -1;
+        for (int j = 0; j < blocks; j++) { 
+            if (blockSize[j] >= processSize[i] && !occupied[j])
+            {
+                // place it at the first block fit to accomodate process
+                if (indexPlaced == -1)
+                    indexPlaced = j;
+                    
+                // if any future block is smalller than the current block where
+                // process is placed, change the block and thus indexPlaced
+		// this reduces the wastage thus best fit
+                else if (blockSize[j] < blockSize[indexPlaced])
+                    indexPlaced = j;
+            }
+        }
+ 
+        // If we were successfully able to find block for the process
+        if (indexPlaced != -1)
+        {
+            // allocate this block j to process p[i]
+            allocation[i] = indexPlaced;
+            
+            // make the status of the block as occupied
+            occupied[indexPlaced] = 1;
+        }
+    }
+ 
+    printf("\nProcess No.\tProcess Size\tBlock no.\n");
+    for (int i = 0; i < proccesses; i++)
+    {
+        printf("%d \t\t\t %d \t\t\t", i+1, processSize[i]);
+        if (allocation[i] != -1)
+            printf("%d\n",allocation[i] + 1);
+        else
+            printf("Not Allocated\n");
+    }
+}
+ 
+// Driver code
+int main()
+{
+    int blockSize[] = {100, 50, 30, 120, 35};
+    int processSize[] = {40, 10, 30, 60};
+    int blocks = sizeof(blockSize)/sizeof(blockSize[0]);
+    int proccesses = sizeof(processSize)/sizeof(processSize[0]);
+ 
+    implimentBestFit(blockSize, blocks, processSize, proccesses);
+ 
+    return 0 ;
 }
